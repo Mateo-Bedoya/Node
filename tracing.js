@@ -8,14 +8,14 @@ const {
    getNodeAutoInstrumentations,
 } = require('@opentelemetry/auto-instrumentations-node');
 
-const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-node');
+
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-proto');
 
 const {
    ConsoleMetricExporter,
    PeriodicExportingMetricReader,
 } = require('@opentelemetry/sdk-metrics');
 
-//Instrumentations
 const { ExpressInstrumentation } = require("opentelemetry-instrumentation-express");
 const { MongoDBInstrumentation } = require("@opentelemetry/instrumentation-mongodb");
 const { HttpInstrumentation } = require("@opentelemetry/instrumentation-http");
@@ -25,7 +25,9 @@ const sdk = new NodeSDK({
        [ATTR_SERVICE_NAME]: "todo-service"
    }),
 
-   traceExporter: new ConsoleSpanExporter(),
+   traceExporter: new OTLPTraceExporter({
+       url: "http://localhost:4318/v1/traces",
+   }),
 
    metricReader: new PeriodicExportingMetricReader({
        exporter: new ConsoleMetricExporter(),
